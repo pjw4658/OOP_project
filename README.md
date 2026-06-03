@@ -6,7 +6,7 @@
  OOP_project/
  │
  ├── .vscode/                            # VS Code 실행 및 빌드 설정
- ├── AppleGame.csproj                    # 프로젝트 설정 파일
+ ├── OOP_project.csproj                  # 프로젝트 설정 파일
  │
  ├── Assets/                             # 이미지, 사운드 등 리소스 폴더
  │  ├── Images/                         # 사과 이미지, 아이템 아이콘 등

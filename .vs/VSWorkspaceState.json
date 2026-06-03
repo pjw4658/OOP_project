@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\Assets",
-    "\\Assets\\Images",
+    "\\Assets\\Sounds",
     "\\Source",
-    "\\Source\\Items",
+    "\\Source\\Interfaces",
     "\\Source\\Logic",
     "\\Source\\Models",
     "\\Source\\Ranking",
     "\\Source\\UI",
     "\\Source\\UI\\Components"
   ],
-  "SelectedNode": "\\AppleGame.cs",
+  "SelectedNode": "\\README.md",
   "PreviewInSolutionExplorer": false
 }
