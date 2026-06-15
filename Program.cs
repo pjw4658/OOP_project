@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Threading; // 시간 시뮬레이션을 위한 기능
 using OOP_project.Source.Models;
+using OOP_project.Source.Logics;
 
 namespace OOP_project
 {
@@ -7,33 +10,52 @@ namespace OOP_project
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("=== 사과 게임 정식 API 스펙 기능 테스트 ===");
+            Console.WriteLine("=== 사과 게임 로직 및 시간 시스템 정밀 검증 ===");
 
-            // 1. 6행 8열 규격의 보드판 객체 모델 생성 (내부적으로 CreateBoard 자동 호출)
-            Board board = new Board(6, 8);
+            // 1. 5행 5열의 보드 생성
+            Board board = new Board(5, 5);
+            
+            // 2. 상운님의 GameLogic 객체 생성 (제한 시간 60초 설정)
+            GameLogic game = new GameLogic(board, 60);
+            game.StartGame();
 
-            // 2. 사과 무작위 배치 및 데이터 매칭
-            board.GenerateApples();
+            // 초기 보드 상태 출력
             board.DisplayBoardConsole();
+            Console.WriteLine($"[게임 시작] 현재 점수: {game.GetScore()}점 | 남은 시간: {game.GetRemainingTime()}초");
 
-            // 3. 특정 좌표 선택 및 사과 제거 기능 테스트 (API 매칭 검증)
-            Position testPos = new Position(2, 3); // X=2, Y=3 칸 타겟
-            Cell targetCell = board.GetCell(testPos);
+            // 3. 의도적인 합 계산 테스트 (강제로 특정 셀을 꺼내어 검증)
+            Console.WriteLine("\n[테스트 1] 임의의 칸 두 개를 드래그 선택했다고 가정하고 CheckSum을 돌립니다.");
+            List<Cell> userSelection = new List<Cell>();
+            
+            // 안전하게 보드 내부의 (0,0) 칸과 (0,1) 칸을 리스트에 담음
+            userSelection.Add(board.GetCell(new Position(0, 0)));
+            userSelection.Add(board.GetCell(new Position(1, 0)));
 
-            if (targetCell != null && targetCell.HasApple())
+            // 두 사과의 값을 확인해봅니다.
+            int val1 = userSelection[0].apple.IsJoker ? 0 : userSelection[0].apple.Value;
+            int val2 = userSelection[1].apple.IsJoker ? 0 : userSelection[1].apple.Value;
+            Console.WriteLine($"선택한 사과 수치: {val1}와 {val2} (합: {val1 + val2})");
+
+            // 상운님의 핵심 메서드 CheckSum 호출
+            bool result = game.CheckSum(userSelection);
+            if (result)
             {
-                Console.WriteLine($"\n[이벤트] 좌표 ({testPos.x}, {testPos.y})의 셀을 드래그 선택 후 사과를 제거합니다.");
-                targetCell.Select();       // 셀 선택 상태 전환 테스트
-                targetCell.RemoveApple();   // 사과 데이터 삭제 테스트
+                Console.WriteLine("-> 성공! 합이 10이거나 조커가 있어 사과가 터지고 점수가 올랐습니다.");
+            }
+            else
+            {
+                Console.WriteLine("-> 실패! 합이 10이 되지 않아 점수가 변하지 않았습니다.");
             }
 
-            // 결과 확인을 위해 다시 출력 (해당 칸이 '.'으로 변함)
+            // 반영 후 실시간 상태 출력
             board.DisplayBoardConsole();
+            Console.WriteLine($"[결과] 현재 점수: {game.GetScore()}점 | 남은 시간: {game.GetRemainingTime()}초");
 
-            // 4. 리필 기능 테스트
-            Console.WriteLine("\n[이벤트] 빈 칸에 새로운 사과를 다시 채워 넣습니다 (RefillEmptyCells)");
-            board.RefillEmptyCells();
-            board.DisplayBoardConsole();
+            // 4. 시간 흐름 시뮬레이션 (3초 대기 후 남은 시간 변화 체크)
+            Console.WriteLine("\n[테스트 2] 3초간 플레이어가 고민 중인 상황 시뮬레이션...");
+            Thread.Sleep(3000); // 3초 대기
+
+            Console.WriteLine($"[실시간 시간 통신 체크] 3초 후 남은 시간: {game.GetRemainingTime()}초");
         }
     }
 }
