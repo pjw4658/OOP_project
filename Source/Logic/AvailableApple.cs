@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OOP_project.Source.Models;
 
-namespace OOP_project.Source.Logic
+namespace OOP_project.Source.Logics
 {
     public delegate void ShowHighlightHandler(List<Cell> cells);
 

@@ -148,5 +148,65 @@ namespace OOP_project.Source.Logics
 
         // 게임오버 상태 여부 반환 API
         public bool IsGameOver() => isGameOver || GetRemainingTime() <= 0;
+
+        // 게임오버 후 보드 전체에서 합이 10인 직사각형 조합 탐색
+        // 찾은 조합마다 Show() 호출하여 UI 하이라이트 표시 후 리스트 반환
+        public List<AvailableApple> FindMissedApple()
+        {
+            List<AvailableApple> result = new List<AvailableApple>();
+
+            try
+            {
+                for (int r1 = 0; r1 < board.rows; r1++)
+                {
+                    for (int c1 = 0; c1 < board.cols; c1++)
+                    {
+                        for (int r2 = r1; r2 < board.rows; r2++)
+                        {
+                            for (int c2 = c1; c2 < board.cols; c2++)
+                            {
+                                List<Cell> cells = GetCellsInRect(r1, c1, r2, c2);
+                                AvailableApple combo = new AvailableApple(cells);
+
+                                if (combo.IsValid())
+                                {
+                                    combo.Show();
+                                    result.Add(combo);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[FindMissedApple 오류] {e.Message}");
+            }
+
+            return result;
+        }
+
+        // FindMissedApple() 내부 헬퍼
+        // 직사각형 범위(r1,c1 ~ r2,c2) 안의 사과 있는 셀만 추출
+        private List<Cell> GetCellsInRect(int r1, int c1, int r2, int c2)
+        {
+            List<Cell> cells = new List<Cell>();
+
+            for (int r = r1; r <= r2; r++)
+            {
+                for (int c = c1; c <= c2; c++)
+                {
+                    Position pos = new Position(c, r);
+                    Cell cell = board.GetCell(pos);
+
+                    if (cell != null && cell.HasApple())
+                    {
+                        cells.Add(cell);
+                    }
+                }
+            }
+
+            return cells;
+        }
     }
 }
