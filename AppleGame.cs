@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using OPP_project.Source.UI;
+using OOP_project.Source.Models;
 
 namespace AppleGame
 {
