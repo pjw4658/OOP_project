@@ -1,0 +1,46 @@
+[33mc3ec70c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/park-GameLogic[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/feature/park-GameLogic[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #13 from in-cotton/in-cotton/feature-items
+[33m6b39b5a[m feature: Shuffle, Hint, Joker 아이템 클래스 추가
+[33m0d12d5b[m Merge pull request #12 from in-cotton/feature/forestuna-board-class-data
+[33mfdbb0c5[m Merge branch 'main' into feature/forestuna-board-class-data
+[33m6bced7c[m 게임 로직 변경
+[33m29ab882[m Merge pull request #11 from pjw4658/feature/park-GameLogic
+[33m61e155d[m feat: GameLogic 클래스 FindMissedApple 메서드 추가 및 AvailableApple 네임스페이스 Logics로 수정, 통일
+[33mcc4df1d[m Merge pull request #9 from in-cotton/feature/gamedata
+[33mfe92a2a[m Merge pull request #8 from in-cotton/feature/forestuna-board-class-data
+[33me3d6bb2[m Merge pull request #10 from in-cotton/main
+[33m22f793b[m 프로그램 제작
+[33m78490f1[m Add Combo and GameData
+[33mae13dc3[m 게임 로직 1
+[33mbc968ac[m Merge pull request #7 from pjw4658/feature/park-GameLogic
+[33mb4840aa[m feat: AvailableApple 클래스 추가
+[33m1ca2169[m Merge pull request #6 from pjw4658/feature/park-GameLogic
+[33m7f793dc[m Merge pull request #5 from in-cotton/feature/forestuna-board-class-data
+[33m90a7fe0[m fix: 윈도우 폼 디자이너 및 빌드 오류 해결을 위한 프로젝트 설정 수정
+[33m5ebfff7[m Merge branch 'main' into feature/forestuna-board-class-data
+[33mdc074cb[m Merge pull request #4 from in-cotton/in-cotton/merge-p3
+[33mc3eb834[m fix: merge pr3
+[33mb76f75f[m refactor: 게임, 메인 화면 UI 요소 사용자 정의 컨트롤로 분리
+[33m9b4adff[m chore: .vs, obj 캐시 제거 및 .gitignore 업데이트
+[33m6d4d934[m Merge pull request #2 from in-cotton/in-cotton/feature-item-classes
+[33m8d1ba54[m Merge branch 'main' into in-cotton/feature-item-classes
+[33md7c445d[m Revert "Merge pull request #1 from pjw4658/feature/박재우-GameLogic"
+[33m3949de0[m Merge pull request #1 from pjw4658/feature/박재우-GameLogic
+[33mad548a6[m fix: 맥 아이콘 파일 삭제
+[33mc4accbc[m[33m ([m[1;31morigin/feature/박재우-GameLogic[m[33m)[m 메인, 게임화면 UI 배치 및 AppleGame.cs 3번째 줄 오류로 수정.
+[33me2f3d6f[m[33m ([m[1;32mmain[m[33m)[m 1
+[33mcf0b3d5[m Add Apple hierarchy classes
+[33m5c0ae41[m Merge branch 'main' of https://github.com/in-cotton/OOP_project
+[33m1d444c5[m Add gitignore
+[33mf3980a5[m test commit
+[33md082368[m - feature: 아이템 타입 Enum 작성 - feature: Item, SingleUseItem,TargetedItem 클래스 작성
+[33m03921a4[m 테스트 구동 메인 엔트리
+[33mf6688ff[m 보드의 한 칸을 나타내며 좌표, 사과 정보 및 선택 상태를 관리하는 클래스입니다.
+[33m8fea6e2[m 보드판 위의 X, Y 좌표를 하나의 단위로 묶어서 관리하는 경량 데이터 구조체입니다.
+[33m41af29e[m Delete Source/Models/Position.cs
+[33m45a8f71[m 게임 보드를 구성하고 셀 생성, 사과 배치 및 보드 상태를 관리하는 클래스입니다.
+[33m6ca645b[m 구조도에 적혀있는 좌표 구조체(Position)입니다.
+[33mf021edf[m chore: 자잘한 오타 수정
+[33m3daa2f1[m chore: .vs 임시 파일 캐시 삭제 및 ignore 적용
+[33m3b60396[m chore: 프로젝트 초기 디렉토리 구조 생성
+[33m61cd98c[m - docs: README.md 에 디렉토리 구조 설명 추가
+[33m390f7d1[m Add project title to README.md
