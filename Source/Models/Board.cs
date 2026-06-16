@@ -3,141 +3,119 @@ using System;
 namespace OOP_project.Source.Models
 {
     /// <summary>
-    /// 게임 보드를 구성하고 셀 생성, 사과 배치 및 보드 상태를 관리하는 클래스입니다.
+    /// 게임 보드를 구성하고 셀 생성, 사과 배치를 관리하는 클래스입니다.
     /// </summary>
     public class Board
     {
-        public int rows;           // 보드의 행(Row) 개수
-        public int cols;           // 보드의 열(Column) 개수
-        public Cell[,] cells;      // 보드를 구성하는 셀들을 저장하는 2차원 배열
-        public Random random;      // 랜덤한 사과 생성에 사용되는 객체
+        private int boardRows;
+        private int boardCols;
+        private Cell[,] cells;
+        private Random random;
 
-        // 생성자 (명세서 규격을 안전하게 실행하기 위해 기본 초기화 포함)
+        // GameLogic에서 board.rows, board.cols 필드에 접근하므로 카멜케이스 속성을 열어줍니다.
+        public int rows => boardRows;
+        public int cols => boardCols;
+
         public Board(int rows, int cols)
         {
-            this.rows = rows;
-            this.cols = cols;
+            this.boardRows = rows;
+            this.boardCols = cols;
             this.random = new Random();
-            CreateBoard();
+            createBoard();
         }
 
-        /// <summary>
-        /// 보드와 셀을 생성하고 초기화하는 메서드입니다.
-        /// </summary>
-        public bool CreateBoard()
+        public bool createBoard()
         {
-            cells = new Cell[rows, cols];
-            
-            for (int r = 0; r < rows; r++)
+            cells = new Cell[boardRows, boardCols];
+            for (int r = 0; r < boardRows; r++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int c = 0; c < boardCols; c++)
                 {
-                    // 고유 좌표 구조체를 넘겨주며 모든 칸의 Cell 객체 생성
-                    Position pos = new Position(c, r); // x=열(c), y=행(r)
-                    cells[r, c] = new Cell(pos);
+                    cells[r, c] = new Cell(new Position(c, r));
                 }
             }
             return true;
         }
 
-        /// <summary>
-        /// 보드에 일반 사과와 조커 사과를 생성하여 배치하는 메서드입니다.
-        /// </summary>
-        public void GenerateApples()
+        public void generateApples()
         {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < boardRows; r++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int c = 0; c < boardCols; c++)
                 {
-                    // 예시 확률 규칙: 7% 확률로 조커 사과 생성, 93% 확률로 일반 사과 생성
+                    // 7% 확률로 특수 조커 사과 생성, 그 외에는 1~9 사이의 일반 사과 생성
                     if (random.Next(0, 100) < 7)
                     {
                         cells[r, c].apple = new JokerApple();
                     }
                     else
                     {
-                        int randomValue = random.Next(1, 10); // 1~9 사이의 사과 숫자
-                        cells[r, c].apple = new NormalApple(randomValue);
+                        cells[r, c].apple = new NormalApple(random.Next(1, 10));
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// 비어 있는 셀에 새로운 사과를 생성하여 채우는 메서드입니다.
-        /// </summary>
-        public void RefillEmptyCells()
+        public void refillEmptyCells()
         {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < boardRows; r++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int c = 0; c < boardCols; c++)
                 {
-                    // 사과가 터져서 비어있는 칸이 있다면 새 일반 사과 동적 리필
-                    if (!cells[r, c].HasApple())
+                    if (!cells[r, c].hasApple())
                     {
-                        int randomValue = random.Next(1, 10);
-                        cells[r, c].apple = new NormalApple(randomValue);
+                        cells[r, c].apple = new NormalApple(random.Next(1, 10));
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// 지정된 좌표의 셀 객체를 반환하는 메서드입니다. (인덱스 초과 예외 방지 포함)
-        /// </summary>
-        public Cell GetCell(Position position)
+        public Cell getCell(Position position)
         {
-            if (position.y >= 0 && position.y < rows && position.x >= 0 && position.x < cols)
+            int x = position.getX();
+            int y = position.getY();
+
+            if (x >= 0 && x < boardCols && y >= 0 && y < boardRows)
             {
-                return cells[position.y, position.x];
+                return cells[y, x];
             }
-            return null; // 범위를 벗어난 좌표 요청 시 안전하게 null 반환
+            return null;
         }
 
-        /// <summary>
-        /// 보드의 모든 셀 정보를 초기화하는 메서드입니다.
-        /// </summary>
-        public void ClearBoard()
+        public void clearBoard()
         {
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < boardRows; r++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int c = 0; c < boardCols; c++)
                 {
-                    cells[r, c].RemoveApple();
-                    cells[r, c].Deselect();
+                    cells[r, c].removeApple();
                 }
             }
         }
 
         /// <summary>
-        /// [임시 메서드] 현재 백엔드 사과판 상태를 콘솔에 가시적으로 찍어주는 시뮬레이터
+        /// Program.cs에서 콘솔 정밀 검증용으로 호출하는 보드 그리기 메서드입니다.
         /// </summary>
-        public void DisplayBoardConsole()
+        public void displayBoardConsole()
         {
-            Console.WriteLine($"\n[실시간 보드판 텍스트 뷰] 상태 (행:{rows} x 열:{cols})");
-            Console.WriteLine(new string('=', cols * 5));
-
-            for (int r = 0; r < rows; r++)
+            for (int r = 0; r < boardRows; r++)
             {
-                for (int c = 0; c < cols; c++)
+                for (int c = 0; c < boardCols; c++)
                 {
-                    Cell cell = cells[r, c];
-                    if (!cell.HasApple())
+                    if (cells[r, c].hasApple())
                     {
-                        Console.Write("  .  "); // 사과가 터진 빈자리
-                    }
-                    else if (cell.apple.IsJoker)
-                    {
-                        Console.Write(" [J] "); // 조커 사과 표시
+                        if (cells[r, c].apple.isJoker())
+                            Console.Write("J ");
+                        else
+                            Console.Write($"{cells[r, c].apple.getValue()} ");
                     }
                     else
                     {
-                        Console.Write($"  {cell.apple.Value}  "); // 일반 사과 수치
+                        Console.Write(". ");
                     }
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine(new string('=', cols * 5));
         }
     }
 }

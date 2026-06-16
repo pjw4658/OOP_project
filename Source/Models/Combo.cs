@@ -1,56 +1,42 @@
-namespace OOP_PROJECT.Source.Models;
-
-public class Combo
+namespace OOP_project.Source.Models
 {
-    private int comboCount;
-    private int maxCombo;
-
-    public Combo()
+    /// <summary>
+    /// [최창무 담당] 연속 성공 콤보 횟수와 점수 보너스 가산을 제어하는 클래스입니다.
+    /// </summary>
+    public class Combo
     {
-        comboCount = 0;
-        maxCombo = 0;
-    }
+        private int comboCount;
+        private int maxCombo;
 
-    public void IncreaseCombo()
-    {
-        comboCount++;
-
-        if (comboCount > maxCombo)
+        public Combo()
         {
-            maxCombo = comboCount;
-        }
-    }
-
-    public void ResetCombo()
-    {
-        comboCount = 0;
-    }
-
-    public int GetComboCount()
-    {
-        return comboCount;
-    }
-
-    public int GetMaxCombo()
-    {
-        return maxCombo;
-    }
-
-    public int GetComboBonus()
-    {
-        if (comboCount >= 5)
-        {
-            return 30;
-        }
-        else if (comboCount >= 3)
-        {
-            return 20;
-        }
-        else if (comboCount >= 2)
-        {
-            return 10;
+            comboCount = 0;
+            maxCombo = 0;
         }
 
-        return 0;
+        public void increaseCombo()
+        {
+            comboCount++;
+            if (comboCount > maxCombo)
+            {
+                maxCombo = comboCount;
+            }
+        }
+
+        public void resetCombo()
+        {
+            comboCount = 0;
+        }
+
+        public int getComboCount() => comboCount;
+        public int getMaxCombo() => maxCombo;
+
+        public int getComboBonus()
+        {
+            if (comboCount >= 5) return 30;
+            if (comboCount >= 3) return 20;
+            if (comboCount >= 2) return 10;
+            return 0;
+        }
     }
 }
