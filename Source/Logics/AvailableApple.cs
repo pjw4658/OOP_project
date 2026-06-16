@@ -1,50 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using OOP_project.Source.Models;
 
-namespace OOP_project.Source.Logics
+namespace OOP_project.Source.Models
 {
-    public delegate void ShowHighlightHandler(List<Cell> cells);
-
+    /// <summary>
+    /// [박재우 담당] 합이 10이 되는 유효한 사과 조합을 관리하는 클래스입니다.
+    /// </summary>
     public class AvailableApple
     {
-        private List<Cell> availableApple;
-        private int availableSum;
-
-        public event ShowHighlightHandler OnShowHighlight;
+        private List<Cell> availableCells;
 
         public AvailableApple(List<Cell> cells)
         {
-            availableApple = cells;
-            availableSum = 0;
+            this.availableCells = cells;
+        }
 
-            foreach (Cell cell in cells)
+        public bool isValid()
+        {
+            if (availableCells == null || availableCells.Count == 0) return false;
+
+            int sum = 0;
+            bool hasJoker = false;
+
+            foreach (Cell cell in availableCells)
             {
-                if (cell.HasApple())
+                if (cell.apple.isJoker())
                 {
-                    availableSum += cell.apple.GetValue();
+                    hasJoker = true;
+                }
+                else
+                {
+                    sum += cell.apple.getValue();
                 }
             }
+
+            return hasJoker || sum == 10;
         }
 
-        public bool IsValid()
+        public void show()
         {
-            return availableSum == 10;
-        }
-
-        public void Show()
-        {
-            OnShowHighlight?.Invoke(availableApple);
-        }
-
-        public List<Cell> GetCells()
-        {
-            return availableApple;
-        }
-
-        public int GetSum()
-        {
-            return availableSum;
+            // 힌트 제공 시 화면에 하이라이트 표시 이펙트를 넣는 트리거 영역
+            // 지금은 콘솔 검증용이므로 간단한 로그 출력이나 비워두셔도 무방합니다.
         }
     }
 }
