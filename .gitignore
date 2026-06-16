@@ -10,3 +10,18 @@ Icon[r]
 # vs system files
 .vs/
 *.vsidx
+
+# 임시 파일 및 캐시
+.obj/
+[Bb]in/
+[Oo]bj/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# 빌드 결과물 및 로그
+*.exe
+*.dll
+*.pdb
+*.log
