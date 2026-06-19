@@ -39,19 +39,12 @@ namespace OOP_project.Source.Models
 
         public void generateApples()
         {
-            for (int r = 0; r < boardRows; r++)
+            for (int r = 0; r < rows; r++)
             {
-                for (int c = 0; c < boardCols; c++)
+                for (int c = 0; c < cols; c++)
                 {
-                    // 7% 확률로 특수 조커 사과 생성, 그 외에는 1~9 사이의 일반 사과 생성
-                    if (random.Next(0, 100) < 7)
-                    {
-                        cells[r, c].apple = new JokerApple();
-                    }
-                    else
-                    {
-                        cells[r, c].apple = new NormalApple(random.Next(1, 10));
-                    }
+                    int randomValue = random.Next(1, 10); // 1~9 일반 사과만 생성
+                    cells[r, c].apple = new NormalApple(randomValue);
                 }
             }
         }

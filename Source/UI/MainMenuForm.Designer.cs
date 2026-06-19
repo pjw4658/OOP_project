@@ -114,6 +114,7 @@
             btnStart.TabIndex = 3;
             btnStart.Text = "게임시작";
             btnStart.UseVisualStyleBackColor = false;
+            btnStart.Click += new EventHandler(btnStart_Click);
             // 
             // rankingBoardControl1
             // 

@@ -36,10 +36,10 @@
             lblScoreTitle = new Label();
             pnlBoard = new Panel();
             pnlSide = new Panel();
+            itemButtonControl = new project_cs.Source.UI.Components.ItemButtonControl();
             listBox1 = new ListBox();
             grpBoardInfo = new GroupBox();
             lblBoardInfo = new Label();
-            itemButtonControl1 = new project_cs.Source.UI.Components.ItemButtonControl();
             pnlTopBar.SuspendLayout();
             pnlSide.SuspendLayout();
             grpBoardInfo.SuspendLayout();
@@ -80,6 +80,7 @@
             btnPause.TabIndex = 6;
             btnPause.Text = "일시정지";
             btnPause.UseVisualStyleBackColor = true;
+            btnPause.Click += btnPause_Click;
             // 
             // lblScore
             // 
@@ -112,13 +113,20 @@
             // pnlSide
             // 
             pnlSide.BackColor = SystemColors.ButtonHighlight;
-            pnlSide.Controls.Add(itemButtonControl1);
+            pnlSide.Controls.Add(itemButtonControl);
             pnlSide.Controls.Add(listBox1);
             pnlSide.Controls.Add(grpBoardInfo);
             pnlSide.Location = new Point(777, 107);
             pnlSide.Name = "pnlSide";
             pnlSide.Size = new Size(197, 615);
             pnlSide.TabIndex = 0;
+            // 
+            // itemButtonControl
+            // 
+            itemButtonControl.Location = new Point(23, 20);
+            itemButtonControl.Name = "itemButtonControl";
+            itemButtonControl.Size = new Size(154, 213);
+            itemButtonControl.TabIndex = 6;
             // 
             // listBox1
             // 
@@ -150,13 +158,6 @@
             lblBoardInfo.Text = "중형 보드 10x10";
             lblBoardInfo.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // itemButtonControl1
-            // 
-            itemButtonControl1.Location = new Point(23, 20);
-            itemButtonControl1.Name = "itemButtonControl1";
-            itemButtonControl1.Size = new Size(154, 213);
-            itemButtonControl1.TabIndex = 6;
-            // 
             // GameForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -187,6 +188,6 @@
         private ListBox listBox1;
         private Components.ComboControl comboControl1;
         private Components.TimeControl timeControl1;
-        private Components.ItemButtonControl itemButtonControl1;
+        private Components.ItemButtonControl itemButtonControl;
     }
 }

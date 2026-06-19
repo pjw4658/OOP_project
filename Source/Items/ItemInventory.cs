@@ -79,14 +79,14 @@ namespace project_cs.Source.Items
         /// 특정 칸을 찍어서 쓰는 아이템(JokerItem)을 실행합니다.
         /// 플레이어가 클릭한 칸 정보를 targetCell로 함께 전달합니다.
         /// <returns>아이템 사용 성공 시 true, 아이템이 없거나 TargetedItem이 아니거나 실행 실패 시 false</returns>
-        public bool UseItem(string itemId, Board board, Cell targetCell)
+        public bool UseItem(string itemId, GameLogic gameLogic, Cell targetCell)
         {
             if (!TryGetItem(itemId, out Item item)) return false;
 
             // TargetedItem인지 확인 후 타겟 전용 Execute 호출
             if (item is TargetedItem targetedItem)
             {
-                return targetedItem.Execute(board, targetCell);
+                return targetedItem.Execute(gameLogic, targetCell);
             }
 
             // TargetedItem이 아닌 아이템에 타겟을 넘기려 했으므로 실패 처리

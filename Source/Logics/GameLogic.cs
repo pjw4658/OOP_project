@@ -17,6 +17,9 @@ namespace OOP_project.Source.Logic
         private List<Cell> selectedCells;     // 플레이어가 드래그 중인 셀 목록 실시간 저장 변수
         private DateTime gameStartTime;       // 게임이 시작된 실제 시스템 시간 기록
 
+        // [추가됨] 일시정지 시작 시간을 기록하는 변수
+        private DateTime? pauseStartTime = null;
+
         // 속성 (item 계층에서 GameLogic 으로 Board 를 사용하기 위해)
         public Board Board => board;
 
@@ -37,18 +40,22 @@ namespace OOP_project.Source.Logic
         {
             gameData.resetData();
             gameStartTime = DateTime.Now;
+            pauseStartTime = null; // 재시작 시 일시정지 상태도 초기화
             board.generateApples();
             selectedCells.Clear();
         }
 
         /// <summary>
         /// 현재 남은 시간을 초 단위로 정밀 계산하여 gameData에 동기화하고 반환합니다.
+        /// 일시정지 상태를 반영하여 계산합니다.
         /// </summary>
         public int getRemainingTime()
         {
             if (gameData.checkGameOver()) return 0;
 
-            TimeSpan elapsed = DateTime.Now - gameStartTime;
+            // 일시정지 중이면 멈춘 시점까지만 계산하고, 아니면 현재 시간 기준 계산
+            DateTime currentTime = pauseStartTime.HasValue ? pauseStartTime.Value : DateTime.Now;
+            TimeSpan elapsed = currentTime - gameStartTime;
             int remaining = gameData.getTimeLimit() - (int)elapsed.TotalSeconds;
 
             if (remaining <= 0)
@@ -126,8 +133,6 @@ namespace OOP_project.Source.Logic
                 {
                     gameData.addScore(earnedScore);
                 }
-
-                board.refillEmptyCells();
                 this.selectedCells.Clear();
                 return true;
             }
@@ -161,7 +166,7 @@ namespace OOP_project.Source.Logic
         public List<AvailableApple> findMissedApple()
         {
             List<AvailableApple> result = new List<AvailableApple>();
-            
+
             try
             {
                 for (int r1 = 0; r1 < board.rows; r1++)
@@ -177,7 +182,7 @@ namespace OOP_project.Source.Logic
 
                                 if (comboApple.isValid())
                                 {
-                                    comboApple.show(); // 박재우 조원이 구현한 기본 이펙트 메서드 호출
+                                    comboApple.show();
                                     result.Add(comboApple);
                                 }
                             }
@@ -214,7 +219,28 @@ namespace OOP_project.Source.Logic
                 }
             }
 
-            return cells; // 붕 떠있던 리턴 구문과 괄호 쌍을 완벽 복구했습니다.
+            return cells;
+        }
+
+        // ─────────────────────────────────────────────
+        // [추가됨] 일시정지 및 보정 전용 메서드
+        // ─────────────────────────────────────────────
+
+        public void pauseGame()
+        {
+            if (pauseStartTime == null)
+                pauseStartTime = DateTime.Now;
+        }
+
+        public void resumeGame()
+        {
+            if (pauseStartTime.HasValue)
+            {
+                // 멈춰있던 시간만큼 게임 시작 시간을 뒤로 미뤄서 보정합니다.
+                TimeSpan pausedDuration = DateTime.Now - pauseStartTime.Value;
+                gameStartTime = gameStartTime.Add(pausedDuration);
+                pauseStartTime = null;
+            }
         }
     }
 }
