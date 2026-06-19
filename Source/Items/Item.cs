@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Drawing; 
+using System.Drawing;
+using OOP_project.Source.Logic;
 using OOP_project.Source.Models;
 
 namespace OOP_project.Source.Items
@@ -35,7 +36,7 @@ namespace OOP_project.Source.Items
         }
 
         // 추상 메서드 
-        public abstract bool Execute(Board board);
+        public abstract bool Execute(GameLogic gameLogic);
         public abstract ItemType GetItemType();
 
         // 가상 메서드 
