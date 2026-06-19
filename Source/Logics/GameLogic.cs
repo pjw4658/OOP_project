@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using OOP_project.Source.Models;
 
 namespace OOP_project.Source.Logic
@@ -15,6 +16,9 @@ namespace OOP_project.Source.Logic
         private GameData gameData;            // [최창무 담당] 게임 데이터 객체 참조
         private List<Cell> selectedCells;     // 플레이어가 드래그 중인 셀 목록 실시간 저장 변수
         private DateTime gameStartTime;       // 게임이 시작된 실제 시스템 시간 기록
+
+        // 속성 (item 계층에서 GameLogic 으로 Board 를 사용하기 위해)
+        public Board Board => board;
 
         /// <summary>
         /// 생성자입니다. Board 객체와 창무 조원의 GameData 객체를 주입받아 로직을 초기화합니다.
@@ -157,7 +161,7 @@ namespace OOP_project.Source.Logic
         public List<AvailableApple> findMissedApple()
         {
             List<AvailableApple> result = new List<AvailableApple>();
-
+            
             try
             {
                 for (int r1 = 0; r1 < board.rows; r1++)
