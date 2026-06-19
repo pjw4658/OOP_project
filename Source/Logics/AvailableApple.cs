@@ -15,6 +15,8 @@ namespace OOP_project.Source.Models
             this.availableCells = cells;
         }
 
+        public List<Cell> getCells() => availableCells;
+
         public bool isValid()
         {
             if (availableCells == null || availableCells.Count == 0) return false;

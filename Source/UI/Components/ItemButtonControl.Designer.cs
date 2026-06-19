@@ -42,6 +42,7 @@
             btnJoker.TabIndex = 5;
             btnJoker.Text = "조커";
             btnJoker.UseVisualStyleBackColor = true;
+            btnJoker.Click += btnJoker_Click;
             // 
             // btnHint
             // 
@@ -52,6 +53,7 @@
             btnHint.TabIndex = 4;
             btnHint.Text = "힌트";
             btnHint.UseVisualStyleBackColor = true;
+            btnHint.Click += btnHint_Click;
             // 
             // btnShuffle
             // 
@@ -62,6 +64,7 @@
             btnShuffle.TabIndex = 3;
             btnShuffle.Text = "섞기";
             btnShuffle.UseVisualStyleBackColor = true;
+            btnShuffle.Click += btnShuffle_Click;
             // 
             // ItemButtonControl
             // 
