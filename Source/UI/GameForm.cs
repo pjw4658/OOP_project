@@ -37,6 +37,7 @@ namespace project_cs.Source.UI
         private System.Windows.Forms.Timer hintBlinkTimer;
         private bool showHintHighlight = false;
         private bool isJokerMode = false;
+        private Image appleImage;
 
         public GameForm(int rows = 10, int cols = 10, Difficulty difficulty = Difficulty.Normal, MainMenuForm owner = null)
         {
@@ -67,6 +68,10 @@ namespace project_cs.Source.UI
             gameLogic = new GameLogic(board, gameData);
             gameLogic.startGame();
             lblBoardInfo.Text = $"{rows}x{cols} 보드";
+
+            string imagePath = System.IO.Path.Combine(Application.StartupPath, "Assets", "Images", "apple.png");
+            if (System.IO.File.Exists(imagePath))
+                appleImage = Image.FromFile(imagePath);
 
             inventory = new ItemInventory();
             switch (difficulty)
@@ -155,6 +160,8 @@ namespace project_cs.Source.UI
 
                 if (sender is Button btn) btn.Text = "일시정지";
             }
+
+            drawBoard();
         }
 
         // ─────────────────────────────────────────────
@@ -407,27 +414,51 @@ namespace project_cs.Source.UI
             {
                 for (int c = 0; c < cols; c++)
                 {
-                    Cell cell = board.getCell(new Position(c, r));
-                    if (cell == null || !cell.hasApple()) continue;
-
                     int x = c * cellWidth;
                     int y = r * cellHeight;
 
-                    g.FillRectangle(Brushes.LightGreen, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
+                    Cell cell = board.getCell(new Position(c, r));
 
-                    Font font = new Font("맑은 고딕", cellWidth * 0.3f);
+                    if (cell == null || !cell.hasApple())
+                    {
+                        // 빈 셀 — 사과 이미지 없이 회색 배경만 표시
+                        using (SolidBrush emptyBrush = new SolidBrush(Color.FromArgb(220, 220, 220)))
+                            g.FillRectangle(emptyBrush, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
+                        g.DrawRectangle(Pens.Gray, x, y, cellWidth - 1, cellHeight - 1);
+                        continue;
+                    }
+
+                    Font font = new Font("맑은 고딕", cellWidth * 0.2f, FontStyle.Bold);
+
                     if (cell.apple.isJoker())
                     {
-                        g.FillRectangle(Brushes.Orange, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
+                        // 조커 사과 — 주황 배경 + J
+                        if (appleImage != null)
+                            g.DrawImage(appleImage, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
+                        else
+                            g.FillRectangle(Brushes.Orange, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
+
                         SizeF jSize = g.MeasureString("J", font);
-                        g.DrawString("J", font, Brushes.DarkRed, x + (cellWidth - jSize.Width) / 2, y + (cellHeight - jSize.Height) / 2);
+                        g.DrawString("J", font, Brushes.DarkRed,
+                            x + (cellWidth - jSize.Width) / 2,
+                            y + (cellHeight - jSize.Height) / 2 + (cellHeight/20));
                     }
                     else
                     {
+                        // 일반 사과 — apple.png 이미지 배경 + 숫자
+                        if (appleImage != null)
+                            g.DrawImage(appleImage, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
+                        else
+                            g.FillRectangle(Brushes.LightGreen, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
+
                         string value = cell.apple.getValue().ToString();
                         SizeF textSize = g.MeasureString(value, font);
                         float textX = x + (cellWidth - textSize.Width) / 2;
-                        float textY = y + (cellHeight - textSize.Height) / 2;
+                        float textY = y + (cellHeight - textSize.Height) / 2 + (cellHeight / 20);
+
+                        // 숫자 가독성을 위해 흰색 테두리 효과(외곽선) 후 진한 색 텍스트
+                        g.DrawString(value, font, Brushes.White,
+                            textX - 1, textY - 1);
                         g.DrawString(value, font, Brushes.DarkGreen, textX, textY);
                     }
 
@@ -471,6 +502,21 @@ namespace project_cs.Source.UI
                 using (Pen dragPen = new Pen(Color.Red, 2))
                 {
                     g.DrawRectangle(dragPen, x, y, w, h);
+                }
+            }
+
+            if (isPaused)
+            {
+                using (SolidBrush overlay = new SolidBrush(Color.FromArgb(255, 0, 0, 0)))
+                    g.FillRectangle(overlay, 0, 0, pnlBoard.Width, pnlBoard.Height);
+
+                string pauseText = "일시정지";
+                using (Font pauseFont = new Font("맑은 고딕", 28f, FontStyle.Bold))
+                {
+                    SizeF textSize = g.MeasureString(pauseText, pauseFont);
+                    float tx = (pnlBoard.Width - textSize.Width) / 2;
+                    float ty = (pnlBoard.Height - textSize.Height) / 2;
+                    g.DrawString(pauseText, pauseFont, Brushes.White, tx, ty);
                 }
             }
         }

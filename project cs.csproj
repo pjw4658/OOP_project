@@ -10,6 +10,7 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <BaseOutputPath>C:\Build\OOP_project</BaseOutputPath>
     <BaseIntermediateOutputPath>C:\Build\OOP_project\obj\</BaseIntermediateOutputPath>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
 
   <ItemGroup>
