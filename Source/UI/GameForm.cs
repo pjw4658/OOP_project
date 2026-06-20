@@ -14,9 +14,6 @@ namespace project_cs.Source.UI
 {
     public partial class GameForm : Form
     {
-        // ─────────────────────────────────────────────
-        // 게임 코어 및 상태 변수
-        // ─────────────────────────────────────────────
         private GameLogic gameLogic;
         private Board board;
         private GameData gameData;
@@ -29,10 +26,9 @@ namespace project_cs.Source.UI
         private Point dragEnd;
         private bool isDragging = false;
         private bool isPaused = false;
+        private string boardMessage = "";
+        private int messageTimer = 0;
 
-        // ─────────────────────────────────────────────
-        // 아이템 시스템 (Inventory 통합) 및 이펙트 변수
-        // ─────────────────────────────────────────────
         private ItemInventory inventory;
         private System.Windows.Forms.Timer hintBlinkTimer;
         private bool showHintHighlight = false;
@@ -87,7 +83,7 @@ namespace project_cs.Source.UI
                 case Difficulty.Hard:
                     inventory.AddItem(new ShuffleItem("Shuffle_01"));
                     break;
-                default: // Normal
+                default:
                     inventory.AddItem(new ShuffleItem("Shuffle_01"));
                     inventory.AddItem(new HintItem("Hint_01"));
                     inventory.AddItem(new JokerItem("Joker_01"));
@@ -122,8 +118,8 @@ namespace project_cs.Source.UI
             listBox1.Items.Clear();
 
             int shuffleCount = inventory.CountAvailable(ItemType.Shuffle);
-            int hintCount    = inventory.CountAvailable(ItemType.Hint);
-            int jokerCount   = inventory.CountAvailable(ItemType.Joker);
+            int hintCount = inventory.CountAvailable(ItemType.Hint);
+            int jokerCount = inventory.CountAvailable(ItemType.Joker);
 
             if (shuffleCount > 0 || difficulty != Difficulty.Hard)
                 listBox1.Items.Add($"섞기 아이템 : {shuffleCount}개");
@@ -135,9 +131,6 @@ namespace project_cs.Source.UI
                 listBox1.Items.Add($"조커 아이템 : {jokerCount}개");
         }
 
-        // ─────────────────────────────────────────────
-        // [추가됨] 일시정지 버튼 클릭 이벤트
-        // ─────────────────────────────────────────────
         private void btnPause_Click(object sender, EventArgs e)
         {
             if (gameLogic == null || gameLogic.isGameOver()) return;
@@ -149,7 +142,6 @@ namespace project_cs.Source.UI
                 gameLogic.pauseGame();
                 gameTimer.Stop();
                 hintBlinkTimer?.Stop();
-
                 if (sender is Button btn) btn.Text = "계속하기";
             }
             else
@@ -157,16 +149,11 @@ namespace project_cs.Source.UI
                 gameLogic.resumeGame();
                 gameTimer.Start();
                 if (showHintHighlight) hintBlinkTimer?.Start();
-
                 if (sender is Button btn) btn.Text = "일시정지";
             }
 
             drawBoard();
         }
-
-        // ─────────────────────────────────────────────
-        // 아이템 사용 버튼 이벤트 핸들러 (입력 차단 포함)
-        // ─────────────────────────────────────────────
 
         private void ItemButtonControl_OnShuffleClicked(object sender, EventArgs e)
         {
@@ -248,9 +235,17 @@ namespace project_cs.Source.UI
             this.Close();
         }
 
-        // ─────────────────────────────────────────────
-        // 메인 게임 타이머 및 마우스 컨트롤 
-        // ─────────────────────────────────────────────
+        private void checkAndResetIfNoCombo()
+        {
+            List<AvailableApple> combos = gameLogic.findMissedApple();
+            if (combos.Count == 0)
+            {
+                board.generateApples();
+                boardMessage = "조합 없음 - 자동 리셋";
+                messageTimer = 4;
+                drawBoard();
+            }
+        }
 
         private void gameTimer_Tick(object sender, EventArgs e)
         {
@@ -268,6 +263,13 @@ namespace project_cs.Source.UI
             comboControl1.updateCombo(comboCount, multiplier);
             comboControl1.updateComboTimer((int)comboTimer);
             lblScore.Text = gameData.getScore().ToString();
+
+            if (messageTimer > 0)
+            {
+                messageTimer--;
+                if (messageTimer == 0) boardMessage = "";
+            }
+
             drawBoard();
 
             if (remaining <= 0)
@@ -280,7 +282,7 @@ namespace project_cs.Source.UI
 
         private void pnlBoard_MouseDown(object sender, MouseEventArgs e)
         {
-            if (isPaused) return; // 일시정지 중 드래그 방지
+            if (isPaused) return;
             if (isJokerMode) return;
 
             isDragging = true;
@@ -308,17 +310,14 @@ namespace project_cs.Source.UI
                     int clickedCol = e.X / cellWidth;
                     int clickedRow = e.Y / cellHeight;
 
-                    // 케이스 2: 보드 밖 클릭
                     if (clickedCol < 0 || clickedCol >= cols || clickedRow < 0 || clickedRow >= rows)
                         throw new JokerTargetException("보드 범위를 벗어난 곳입니다.\n보드 안의 사과를 클릭해 주세요.");
 
                     Cell targetCell = board.getCell(new Position(clickedCol, clickedRow));
 
-                    // 케이스 2: 빈 셀 클릭
                     if (targetCell == null || !targetCell.hasApple())
                         throw new JokerTargetException("빈 칸에는 조커를 사용할 수 없습니다.\n사과가 있는 칸을 클릭해 주세요.");
 
-                    // 케이스 3: 이미 조커 사과인 칸 클릭
                     if (targetCell.apple.isJoker())
                         throw new JokerTargetException("이미 조커로 변환된 사과입니다.\n다른 사과를 선택해 주세요.");
 
@@ -338,23 +337,21 @@ namespace project_cs.Source.UI
                 List<Cell> selected = getSelectedCells();
                 if (selected.Count > 0)
                 {
-                    // checkSum 내부에서 케이스 1 JokerSelectionException 발생 가능
                     bool success = gameLogic.checkSum(selected);
                     if (success)
                     {
                         lblScore.Text = gameData.getScore().ToString();
                         StopHintEffect();
+                        checkAndResetIfNoCombo();
                     }
                 }
             }
             catch (JokerTargetException ex)
             {
-                // 케이스 2, 3: 조커 아이템 잘못된 대상 지정
                 MessageBox.Show(ex.Message, "조커 사용 불가", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             catch (JokerSelectionException ex)
             {
-                // 케이스 1: 조커 드래그 선택 규칙 위반
                 MessageBox.Show(ex.Message, "선택 불가", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             finally
@@ -386,9 +383,7 @@ namespace project_cs.Source.UI
                 {
                     Cell cell = board.getCell(new Position(c, r));
                     if (cell != null && cell.hasApple())
-                    {
                         selected.Add(cell);
-                    }
                 }
             }
 
@@ -399,10 +394,6 @@ namespace project_cs.Source.UI
         {
             pnlBoard.Invalidate();
         }
-
-        // ─────────────────────────────────────────────
-        // 렌더링 영역 (시각화 코드)
-        // ─────────────────────────────────────────────
 
         private void pnlBoard_Paint(object sender, PaintEventArgs e)
         {
@@ -421,7 +412,6 @@ namespace project_cs.Source.UI
 
                     if (cell == null || !cell.hasApple())
                     {
-                        // 빈 셀 — 사과 이미지 없이 회색 배경만 표시
                         using (SolidBrush emptyBrush = new SolidBrush(Color.FromArgb(220, 220, 220)))
                             g.FillRectangle(emptyBrush, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
                         g.DrawRectangle(Pens.Gray, x, y, cellWidth - 1, cellHeight - 1);
@@ -432,7 +422,6 @@ namespace project_cs.Source.UI
 
                     if (cell.apple.isJoker())
                     {
-                        // 조커 사과 — 주황 배경 + J
                         if (appleImage != null)
                             g.DrawImage(appleImage, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
                         else
@@ -441,11 +430,10 @@ namespace project_cs.Source.UI
                         SizeF jSize = g.MeasureString("J", font);
                         g.DrawString("J", font, Brushes.DarkRed,
                             x + (cellWidth - jSize.Width) / 2,
-                            y + (cellHeight - jSize.Height) / 2 + (cellHeight/20));
+                            y + (cellHeight - jSize.Height) / 2 + (cellHeight / 20));
                     }
                     else
                     {
-                        // 일반 사과 — apple.png 이미지 배경 + 숫자
                         if (appleImage != null)
                             g.DrawImage(appleImage, x + 1, y + 1, cellWidth - 2, cellHeight - 2);
                         else
@@ -456,9 +444,7 @@ namespace project_cs.Source.UI
                         float textX = x + (cellWidth - textSize.Width) / 2;
                         float textY = y + (cellHeight - textSize.Height) / 2 + (cellHeight / 20);
 
-                        // 숫자 가독성을 위해 흰색 테두리 효과(외곽선) 후 진한 색 텍스트
-                        g.DrawString(value, font, Brushes.White,
-                            textX - 1, textY - 1);
+                        g.DrawString(value, font, Brushes.White, textX - 1, textY - 1);
                         g.DrawString(value, font, Brushes.DarkGreen, textX, textY);
                     }
 
@@ -492,6 +478,18 @@ namespace project_cs.Source.UI
                 }
             }
 
+            if (!string.IsNullOrEmpty(boardMessage))
+            {
+                Font msgFont = new Font("맑은 고딕", 16f, FontStyle.Bold);
+                SizeF msgSize = g.MeasureString(boardMessage, msgFont);
+                float msgX = (pnlBoard.Width - msgSize.Width) / 2;
+                float msgY = (pnlBoard.Height - msgSize.Height) / 2;
+
+                g.FillRectangle(new SolidBrush(Color.FromArgb(180, Color.Black)),
+                    msgX - 10, msgY - 5, msgSize.Width + 20, msgSize.Height + 10);
+                g.DrawString(boardMessage, msgFont, Brushes.White, msgX, msgY);
+            }
+
             if (isDragging)
             {
                 int x = Math.Min(dragStart.X, dragEnd.X);
@@ -500,9 +498,7 @@ namespace project_cs.Source.UI
                 int h = Math.Abs(dragEnd.Y - dragStart.Y);
 
                 using (Pen dragPen = new Pen(Color.Red, 2))
-                {
                     g.DrawRectangle(dragPen, x, y, w, h);
-                }
             }
 
             if (isPaused)

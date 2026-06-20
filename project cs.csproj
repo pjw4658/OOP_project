@@ -11,6 +11,7 @@
     <BaseOutputPath>C:\Build\OOP_project</BaseOutputPath>
     <BaseIntermediateOutputPath>C:\Build\OOP_project\obj\</BaseIntermediateOutputPath>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
   <ItemGroup>
