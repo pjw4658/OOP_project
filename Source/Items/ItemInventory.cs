@@ -140,5 +140,64 @@ namespace project_cs.Source.Items
         {
             return _items != null && _itemOrder != null;
         }
+
+        // ─────────────────────────────────────────────
+        // 타입 기반 유틸리티 메서드
+        // ─────────────────────────────────────────────
+
+        /// 지정한 ItemType 중 현재 사용 가능한 아이템 수를 반환합니다.
+        public int CountAvailable(ItemType type)
+        {
+            int count = 0;
+            foreach (string id in _itemOrder)
+            {
+                if (TryGetItem(id, out Item item) && item.GetItemType() == type && item.IsAvailable())
+                    count++;
+            }
+            return count;
+        }
+
+        /// 지정한 ItemType 중 사용 가능한 아이템이 하나라도 있으면 true를 반환합니다.
+        public bool HasAvailable(ItemType type) => CountAvailable(type) > 0;
+
+        /// 지정한 ItemType 중 가장 먼저 추가된 사용 가능한 아이템을 꺼내 실행합니다.
+        /// ShuffleItem, HintItem 전용입니다.
+        public bool UseFirstAvailableOfType(ItemType type, GameLogic gameLogic)
+        {
+            foreach (string id in _itemOrder)
+            {
+                if (TryGetItem(id, out Item item) && item.GetItemType() == type && item.IsAvailable())
+                    return item.Execute(gameLogic);
+            }
+            return false;
+        }
+
+        /// 지정한 ItemType 중 가장 먼저 추가된 사용 가능한 TargetedItem을 꺼내 실행합니다.
+        /// JokerItem 전용입니다.
+        public bool UseFirstAvailableTargeted(ItemType type, GameLogic gameLogic, Cell targetCell)
+        {
+            foreach (string id in _itemOrder)
+            {
+                if (TryGetItem(id, out Item item) && item.GetItemType() == type && item.IsAvailable())
+                {
+                    if (item is TargetedItem targeted)
+                        return targeted.Execute(gameLogic, targetCell);
+                }
+            }
+            return false;
+        }
+
+        /// 지정한 ItemType 중 CachedHints가 설정된 가장 최근 HintItem을 반환합니다.
+        /// 힌트 하이라이트 렌더링 시 사용합니다.
+        public HintItem GetLastUsedHintItem()
+        {
+            HintItem result = null;
+            foreach (string id in _itemOrder)
+            {
+                if (TryGetItem(id, out Item item) && item is HintItem hint && hint.CachedHints != null && hint.CachedHints.Count > 0)
+                    result = hint;
+            }
+            return result;
+        }
     }
 }

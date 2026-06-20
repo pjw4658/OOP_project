@@ -23,7 +23,12 @@ namespace OOP_project.Source.Items
         /// 매 생성마다 다른 셔플 결과를 내도록 시드를 랜덤 설정합니다.
         public ShuffleItem() : base("Shuffle_01", "셔플 아이템")
         {
-            _shuffleSeed = Environment.TickCount; 
+            _shuffleSeed = Environment.TickCount;
+        }
+
+        public ShuffleItem(string itemId) : base(itemId, "셔플 아이템")
+        {
+            _shuffleSeed = Environment.TickCount;
         }
 
         // ─────────────────────────────────────────────

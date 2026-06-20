@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using OOP_project.Source.Exceptions;
 using OOP_project.Source.Models;
 
 namespace OOP_project.Source.Logic
@@ -103,6 +104,12 @@ namespace OOP_project.Source.Logic
             bool isValidSelection = false;
             if (hasJoker)
             {
+                if (sum == 0)
+                    throw new JokerSelectionException(
+                        "조커 사과만 선택할 수 없습니다.\n숫자 사과를 함께 선택해 주세요.");
+                if (sum > 10)
+                    throw new JokerSelectionException(
+                        $"조커를 제외한 숫자의 합({sum})이 10을 초과합니다.\n범위 안의 사과만 선택해 주세요.");
                 isValidSelection = true;
             }
             else
@@ -134,6 +141,10 @@ namespace OOP_project.Source.Logic
                     gameData.addScore(earnedScore);
                 }
                 this.selectedCells.Clear();
+
+                if (board.isEmpty())
+                    board.generateApples();
+
                 return true;
             }
 

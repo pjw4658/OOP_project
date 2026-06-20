@@ -35,8 +35,14 @@ namespace OOP_project.Source.Items
         /// 아이템 ID와 이름을 초기화하고, 캐시 리스트의 메모리 공간을 미리 할당합니다.
         public HintItem() : base("Hint_01", "힌트 보기")
         {
-            _cachedHints = new List<AvailableApple>(); // 힌트 캐시 초기화
-            _maxHintGroups = 3;                     // 최대 3개 조합까지 하이라이트
+            _cachedHints = new List<AvailableApple>();
+            _maxHintGroups = 3;
+        }
+
+        public HintItem(string itemId) : base(itemId, "힌트 보기")
+        {
+            _cachedHints = new List<AvailableApple>();
+            _maxHintGroups = 3;
         }
 
 

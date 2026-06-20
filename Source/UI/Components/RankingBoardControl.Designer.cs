@@ -67,20 +67,23 @@
             tabRanking.Controls.Add(tabPage1);
             tabRanking.Controls.Add(tabPage2);
             tabRanking.Controls.Add(tabPage3);
+            tabRanking.Font = new Font("맑은 고딕", 11F);
             tabRanking.Location = new Point(0, 0);
+            tabRanking.Margin = new Padding(6, 6, 6, 6);
             tabRanking.Name = "tabRanking";
             tabRanking.SelectedIndex = 0;
-            tabRanking.Size = new Size(850, 450);
+            tabRanking.Size = new Size(1700, 847);
             tabRanking.TabIndex = 5;
             // 
             // tabPage1
             // 
             tabPage1.Controls.Add(dgvsRanking);
             tabPage1.Font = new Font("맑은 고딕", 8.830189F, FontStyle.Regular, GraphicsUnit.Point, 129);
-            tabPage1.Location = new Point(4, 26);
+            tabPage1.Location = new Point(8, 54);
+            tabPage1.Margin = new Padding(6, 6, 6, 6);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(842, 420);
+            tabPage1.Padding = new Padding(6, 6, 6, 6);
+            tabPage1.Size = new Size(1684, 785);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "소형";
             tabPage1.UseVisualStyleBackColor = true;
@@ -108,11 +111,12 @@
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
             dgvsRanking.DefaultCellStyle = dataGridViewCellStyle2;
             dgvsRanking.Dock = DockStyle.Fill;
-            dgvsRanking.Location = new Point(3, 3);
+            dgvsRanking.Location = new Point(6, 6);
+            dgvsRanking.Margin = new Padding(6, 6, 6, 6);
             dgvsRanking.Name = "dgvsRanking";
             dgvsRanking.RowHeadersVisible = false;
             dgvsRanking.RowHeadersWidth = 45;
-            dgvsRanking.Size = new Size(836, 414);
+            dgvsRanking.Size = new Size(1672, 773);
             dgvsRanking.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn5
@@ -142,10 +146,11 @@
             // tabPage2
             // 
             tabPage2.Controls.Add(dgvmRanking);
-            tabPage2.Location = new Point(4, 26);
+            tabPage2.Location = new Point(8, 54);
+            tabPage2.Margin = new Padding(6, 6, 6, 6);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(842, 420);
+            tabPage2.Padding = new Padding(6, 6, 6, 6);
+            tabPage2.Size = new Size(1684, 785);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "중형";
             tabPage2.UseVisualStyleBackColor = true;
@@ -173,11 +178,12 @@
             dataGridViewCellStyle4.WrapMode = DataGridViewTriState.False;
             dgvmRanking.DefaultCellStyle = dataGridViewCellStyle4;
             dgvmRanking.Dock = DockStyle.Fill;
-            dgvmRanking.Location = new Point(3, 3);
+            dgvmRanking.Location = new Point(6, 6);
+            dgvmRanking.Margin = new Padding(6, 6, 6, 6);
             dgvmRanking.Name = "dgvmRanking";
             dgvmRanking.RowHeadersVisible = false;
             dgvmRanking.RowHeadersWidth = 45;
-            dgvmRanking.Size = new Size(836, 414);
+            dgvmRanking.Size = new Size(1672, 773);
             dgvmRanking.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn1
@@ -207,10 +213,11 @@
             // tabPage3
             // 
             tabPage3.Controls.Add(dgvbRanking);
-            tabPage3.Location = new Point(4, 26);
+            tabPage3.Location = new Point(8, 54);
+            tabPage3.Margin = new Padding(6, 6, 6, 6);
             tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(842, 420);
+            tabPage3.Padding = new Padding(6, 6, 6, 6);
+            tabPage3.Size = new Size(1684, 785);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "대형";
             tabPage3.UseVisualStyleBackColor = true;
@@ -238,12 +245,14 @@
             dataGridViewCellStyle6.WrapMode = DataGridViewTriState.False;
             dgvbRanking.DefaultCellStyle = dataGridViewCellStyle6;
             dgvbRanking.Dock = DockStyle.Fill;
-            dgvbRanking.Location = new Point(3, 3);
+            dgvbRanking.Location = new Point(6, 6);
+            dgvbRanking.Margin = new Padding(6, 6, 6, 6);
             dgvbRanking.Name = "dgvbRanking";
             dgvbRanking.RowHeadersVisible = false;
             dgvbRanking.RowHeadersWidth = 45;
-            dgvbRanking.Size = new Size(836, 414);
+            dgvbRanking.Size = new Size(1672, 773);
             dgvbRanking.TabIndex = 0;
+            dgvbRanking.CellContentClick += dgvbRanking_CellContentClick;
             // 
             // column1
             // 
@@ -271,11 +280,12 @@
             // 
             // RankingBoardControl
             // 
-            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleDimensions = new SizeF(14F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(tabRanking);
+            Margin = new Padding(6, 6, 6, 6);
             Name = "RankingBoardControl";
-            Size = new Size(850, 449);
+            Size = new Size(1700, 845);
             tabRanking.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvsRanking).EndInit();

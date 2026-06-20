@@ -86,6 +86,19 @@ namespace OOP_project.Source.Models
             }
         }
 
+        public bool isEmpty()
+        {
+            for (int r = 0; r < boardRows; r++)
+            {
+                for (int c = 0; c < boardCols; c++)
+                {
+                    if (cells[r, c].hasApple())
+                        return false;
+                }
+            }
+            return true;
+        }
+
         /// <summary>
         /// Program.cs에서 콘솔 정밀 검증용으로 호출하는 보드 그리기 메서드입니다.
         /// </summary>
