@@ -7,7 +7,9 @@
 	<ImplicitUsings>enable</ImplicitUsings>
 	<Nullable>enable</Nullable>
 	<UseWindowsForms>true</UseWindowsForms>
-  <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <BaseOutputPath>C:\Build\OOP_project</BaseOutputPath>
+    <BaseIntermediateOutputPath>C:\Build\OOP_project\obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

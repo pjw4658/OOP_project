@@ -1,14 +1,33 @@
 ﻿using System;
 using System.Windows.Forms;
+using OOP_project.Source.Logic;
+using OOP_project.Source.Ranking;
 
 namespace project_cs.Source.UI
 {
     public partial class MainMenuForm : Form
     {
+        private RankingManager rankingManager = new RankingManager();
+
         public MainMenuForm()
         {
             InitializeComponent();
-            rbMedium.Checked = true; // 기본값 중형
+            rbMedium.Checked = true;
+            rbNormal.Checked = true;
+        }
+
+        protected override void OnShown(EventArgs e)
+        {
+            base.OnShown(e);
+            rankingBoardControl1.loadRankings(rankingManager);
+        }
+
+        /// <summary>
+        /// GameForm에서 돌아올 때 랭킹을 새로 불러와 화면에 반영합니다.
+        /// </summary>
+        public void RefreshRankings()
+        {
+            rankingBoardControl1.loadRankings(rankingManager);
         }
 
         private void btnStart_Click(object sender, EventArgs e)
@@ -25,10 +44,19 @@ namespace project_cs.Source.UI
             }
             else
             {
-                rows = 10; cols = 10; // 기본 중형
+                rows = 10; cols = 10;
             }
 
-            GameForm gameForm = new GameForm(rows, cols);
+            Difficulty difficulty;
+
+            if (rbEasy.Checked)
+                difficulty = Difficulty.Easy;
+            else if (rbHard.Checked)
+                difficulty = Difficulty.Hard;
+            else
+                difficulty = Difficulty.Normal;
+
+            GameForm gameForm = new GameForm(rows, cols, difficulty, this);
             gameForm.Show();
             this.Hide();
         }

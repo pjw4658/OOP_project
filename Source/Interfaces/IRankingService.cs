@@ -8,9 +8,9 @@ namespace OOP_project.Source.Interfaces
     /// </summary>
     public interface IRankingService
     {
-        void addEntry(string playerName, int score);          // 새로운 랭킹 기록 추가
-        List<RankingEntry> getTopRankings(int limit);         // 상위 N개의 랭킹 리스트 가져오기
-        void saveRankings();                                  // 랭킹 데이터를 로컬 파일에 저장
-        void loadRankings();                                  // 로컬 파일에서 랭킹 데이터 불러오기
+        void addEntry(string playerName, int score, string boardSize);
+        List<RankingEntry> getTopRankings(int limit, string boardSize);
+        void saveRankings();
+        void loadRankings();
     }
 }

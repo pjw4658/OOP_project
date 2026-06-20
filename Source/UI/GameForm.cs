@@ -2,9 +2,11 @@
 using System.Windows.Forms;
 using System.Drawing;
 using System.Collections.Generic;
+using OOP_project.Source.Exceptions;
 using OOP_project.Source.Logic;
 using OOP_project.Source.Models;
 using OOP_project.Source.Items;
+using OOP_project.Source.Ranking;
 using project_cs.Source.UI.Components;
 using project_cs.Source.Items;
 
@@ -21,6 +23,8 @@ namespace project_cs.Source.UI
         private System.Windows.Forms.Timer gameTimer;
         private int rows;
         private int cols;
+        private Difficulty difficulty;
+        private MainMenuForm ownerMenu;
         private Point dragStart;
         private Point dragEnd;
         private bool isDragging = false;
@@ -34,11 +38,13 @@ namespace project_cs.Source.UI
         private bool showHintHighlight = false;
         private bool isJokerMode = false;
 
-        public GameForm(int rows = 10, int cols = 10)
+        public GameForm(int rows = 10, int cols = 10, Difficulty difficulty = Difficulty.Normal, MainMenuForm owner = null)
         {
             InitializeComponent();
             this.rows = rows;
             this.cols = cols;
+            this.difficulty = difficulty;
+            this.ownerMenu = owner;
 
             pnlBoard.Paint += pnlBoard_Paint;
             pnlBoard.MouseDown += pnlBoard_MouseDown;
@@ -58,15 +64,30 @@ namespace project_cs.Source.UI
         {
             board = new Board(rows, cols);
             gameData = new GameData();
-            board.generateApples();
             gameLogic = new GameLogic(board, gameData);
             gameLogic.startGame();
             lblBoardInfo.Text = $"{rows}x{cols} 보드";
 
             inventory = new ItemInventory();
-            inventory.AddItem(new ShuffleItem());
-            inventory.AddItem(new HintItem());
-            inventory.AddItem(new JokerItem());
+            switch (difficulty)
+            {
+                case Difficulty.Easy:
+                    inventory.AddItem(new ShuffleItem("Shuffle_01"));
+                    inventory.AddItem(new ShuffleItem("Shuffle_02"));
+                    inventory.AddItem(new HintItem("Hint_01"));
+                    inventory.AddItem(new HintItem("Hint_02"));
+                    inventory.AddItem(new JokerItem("Joker_01"));
+                    inventory.AddItem(new JokerItem("Joker_02"));
+                    break;
+                case Difficulty.Hard:
+                    inventory.AddItem(new ShuffleItem("Shuffle_01"));
+                    break;
+                default: // Normal
+                    inventory.AddItem(new ShuffleItem("Shuffle_01"));
+                    inventory.AddItem(new HintItem("Hint_01"));
+                    inventory.AddItem(new JokerItem("Joker_01"));
+                    break;
+            }
 
             itemButtonControl.OnShuffleClicked += ItemButtonControl_OnShuffleClicked;
             itemButtonControl.OnHintClicked += ItemButtonControl_OnHintClicked;
@@ -95,18 +116,18 @@ namespace project_cs.Source.UI
         {
             listBox1.Items.Clear();
 
-            Item shuffle = inventory["Shuffle_01"];
-            Item hint = inventory["Hint_01"];
-            Item joker = inventory["Joker_01"];
+            int shuffleCount = inventory.CountAvailable(ItemType.Shuffle);
+            int hintCount    = inventory.CountAvailable(ItemType.Hint);
+            int jokerCount   = inventory.CountAvailable(ItemType.Joker);
 
-            if (shuffle != null)
-                listBox1.Items.Add($"섞기 아이템 : {(shuffle.IsAvailable() ? "1" : "0")}개");
+            if (shuffleCount > 0 || difficulty != Difficulty.Hard)
+                listBox1.Items.Add($"섞기 아이템 : {shuffleCount}개");
 
-            if (hint != null)
-                listBox1.Items.Add($"힌트 아이템 : {(hint.IsAvailable() ? "1" : "0")}개");
+            if (difficulty != Difficulty.Hard)
+                listBox1.Items.Add($"힌트 아이템 : {hintCount}개");
 
-            if (joker != null)
-                listBox1.Items.Add($"조커 아이템 : {(joker.IsAvailable() ? "1" : "0")}개");
+            if (difficulty != Difficulty.Hard)
+                listBox1.Items.Add($"조커 아이템 : {jokerCount}개");
         }
 
         // ─────────────────────────────────────────────
@@ -142,9 +163,9 @@ namespace project_cs.Source.UI
 
         private void ItemButtonControl_OnShuffleClicked(object sender, EventArgs e)
         {
-            if (isPaused) return; // 일시정지 중 차단
+            if (isPaused) return;
 
-            if (inventory.UseItem("Shuffle_01", gameLogic))
+            if (inventory.UseFirstAvailableOfType(ItemType.Shuffle, gameLogic))
             {
                 StopHintEffect();
                 drawBoard();
@@ -158,9 +179,9 @@ namespace project_cs.Source.UI
 
         private void ItemButtonControl_OnHintClicked(object sender, EventArgs e)
         {
-            if (isPaused) return; // 일시정지 중 차단
+            if (isPaused) return;
 
-            if (inventory.UseItem("Hint_01", gameLogic))
+            if (inventory.UseFirstAvailableOfType(ItemType.Hint, gameLogic))
             {
                 showHintHighlight = true;
                 hintBlinkTimer.Start();
@@ -175,9 +196,9 @@ namespace project_cs.Source.UI
 
         private void ItemButtonControl_OnJokerClicked(object sender, EventArgs e)
         {
-            if (isPaused) return; // 일시정지 중 차단
+            if (isPaused) return;
 
-            if (inventory["Joker_01"] != null && inventory["Joker_01"].IsAvailable())
+            if (inventory.HasAvailable(ItemType.Joker))
             {
                 isJokerMode = true;
                 StopHintEffect();
@@ -193,6 +214,31 @@ namespace project_cs.Source.UI
         {
             hintBlinkTimer?.Stop();
             showHintHighlight = false;
+        }
+
+        private void handleGameOver()
+        {
+            string boardSizeLabel = rows == 7 ? "소형" : rows == 14 ? "대형" : "중형";
+            string levelLabel = difficulty == Difficulty.Easy ? "쉬움" :
+                                difficulty == Difficulty.Hard ? "어려움" : "보통";
+            int finalScore = gameData.getScore();
+
+            NameInputForm inputForm = new NameInputForm(finalScore, boardSizeLabel, levelLabel);
+            DialogResult result = inputForm.ShowDialog(this);
+
+            if (result == DialogResult.OK)
+            {
+                RankingManager rankingManager = new RankingManager();
+                rankingManager.addEntry(inputForm.PlayerName, finalScore, boardSizeLabel);
+            }
+
+            if (ownerMenu != null)
+            {
+                ownerMenu.RefreshRankings();
+                ownerMenu.Show();
+            }
+
+            this.Close();
         }
 
         // ─────────────────────────────────────────────
@@ -221,7 +267,7 @@ namespace project_cs.Source.UI
             {
                 gameTimer.Stop();
                 hintBlinkTimer?.Stop();
-                MessageBox.Show("게임 오버!");
+                handleGameOver();
             }
         }
 
@@ -244,46 +290,71 @@ namespace project_cs.Source.UI
 
         private void pnlBoard_MouseUp(object sender, MouseEventArgs e)
         {
-            if (isPaused) return; // 일시정지 중 클릭 방지
+            if (isPaused) return;
 
-            if (isJokerMode)
+            try
             {
-                int cellWidth = pnlBoard.Width / cols;
-                int cellHeight = pnlBoard.Height / rows;
-                int clickedCol = e.X / cellWidth;
-                int clickedRow = e.Y / cellHeight;
-
-                if (clickedCol >= 0 && clickedCol < cols && clickedRow >= 0 && clickedRow < rows)
+                if (isJokerMode)
                 {
+                    int cellWidth = pnlBoard.Width / cols;
+                    int cellHeight = pnlBoard.Height / rows;
+                    int clickedCol = e.X / cellWidth;
+                    int clickedRow = e.Y / cellHeight;
+
+                    // 케이스 2: 보드 밖 클릭
+                    if (clickedCol < 0 || clickedCol >= cols || clickedRow < 0 || clickedRow >= rows)
+                        throw new JokerTargetException("보드 범위를 벗어난 곳입니다.\n보드 안의 사과를 클릭해 주세요.");
+
                     Cell targetCell = board.getCell(new Position(clickedCol, clickedRow));
 
-                    if (inventory.UseItem("Joker_01", gameLogic, targetCell))
+                    // 케이스 2: 빈 셀 클릭
+                    if (targetCell == null || !targetCell.hasApple())
+                        throw new JokerTargetException("빈 칸에는 조커를 사용할 수 없습니다.\n사과가 있는 칸을 클릭해 주세요.");
+
+                    // 케이스 3: 이미 조커 사과인 칸 클릭
+                    if (targetCell.apple.isJoker())
+                        throw new JokerTargetException("이미 조커로 변환된 사과입니다.\n다른 사과를 선택해 주세요.");
+
+                    if (inventory.UseFirstAvailableTargeted(ItemType.Joker, gameLogic, targetCell))
                     {
                         isJokerMode = false;
                         drawBoard();
                         UpdateInventoryUI();
                     }
+                    return;
                 }
-                return;
-            }
 
-            if (!isDragging) return;
-            isDragging = false;
-            dragEnd = e.Location;
+                if (!isDragging) return;
+                isDragging = false;
+                dragEnd = e.Location;
 
-            List<Cell> selected = getSelectedCells();
-
-            if (selected.Count > 0)
-            {
-                bool success = gameLogic.checkSum(selected);
-                if (success)
+                List<Cell> selected = getSelectedCells();
+                if (selected.Count > 0)
                 {
-                    lblScore.Text = gameData.getScore().ToString();
-                    StopHintEffect();
+                    // checkSum 내부에서 케이스 1 JokerSelectionException 발생 가능
+                    bool success = gameLogic.checkSum(selected);
+                    if (success)
+                    {
+                        lblScore.Text = gameData.getScore().ToString();
+                        StopHintEffect();
+                    }
                 }
             }
-
-            pnlBoard.Invalidate();
+            catch (JokerTargetException ex)
+            {
+                // 케이스 2, 3: 조커 아이템 잘못된 대상 지정
+                MessageBox.Show(ex.Message, "조커 사용 불가", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (JokerSelectionException ex)
+            {
+                // 케이스 1: 조커 드래그 선택 규칙 위반
+                MessageBox.Show(ex.Message, "선택 불가", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                isDragging = false;
+                pnlBoard.Invalidate();
+            }
         }
 
         private List<Cell> getSelectedCells()
@@ -364,7 +435,7 @@ namespace project_cs.Source.UI
                 }
             }
 
-            HintItem currentHintItem = inventory["Hint_01"] as HintItem;
+            HintItem currentHintItem = inventory.GetLastUsedHintItem();
 
             if (currentHintItem != null && currentHintItem.CachedHints != null && showHintHighlight)
             {

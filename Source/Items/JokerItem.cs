@@ -17,6 +17,10 @@ namespace OOP_project.Source.Items
         {
         }
 
+        public JokerItem(string itemId) : base(itemId, "조커 아이템", 1)
+        {
+        }
+
         // ─────────────────────────────────────────────
         // 메서드
         // ─────────────────────────────────────────────

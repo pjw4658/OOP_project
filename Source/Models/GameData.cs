@@ -4,6 +4,13 @@ using System;
 
 namespace OOP_project.Source.Logic
 {
+    public enum Difficulty
+    {
+        Easy,
+        Normal,
+        Hard
+    }
+
     /// <summary>
     /// [최창무 담당] 점수, 시간, 콤보 등 현재 게임의 상태 데이터를 독립적으로 관리하는 클래스입니다.
     /// 조장님 지침에 따라 데이터 타입(클래스)은 대문자, 필드 및 메서드는 소문자 시작 카멜케이스로 조율되었습니다.
